@@ -1,6 +1,9 @@
 angular.module('app').service('mqttService', mqttService);
 
 mqttService.$inject = [
+    '$timeout',
+    'brokerDetails',
+    '$state'
 ];
 
 
@@ -9,9 +12,8 @@ mqttService.$inject = [
         - https://github.com/eclipse/paho.mqtt.javascript
         - https://web.archive.org/web/20181212171208/https://github.com/eclipse/paho.mqtt.javascript
 */
-function mqttService() {
+function mqttService($timeout, brokerDetails, $state) {
     var self = this;
-
     self.initialize = initialize;
     self.connect = connect;
     self.subscribe = subscribe;
@@ -76,8 +78,10 @@ function mqttService() {
 
     //called when connection is lost
     function onConnectionLost(callback) {
+        
         if (!client) { throw new Error("Need to Initialize Mqtt") }
         if (callback && typeof callback !== 'function') { throw new Error("Callback must be a function")}
+
         
         client.onConnectionLost = callback;
     }
@@ -89,5 +93,7 @@ function mqttService() {
 
         client.onMessageArrived = callback;
     }
+
+    
 
 }

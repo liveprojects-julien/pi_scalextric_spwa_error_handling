@@ -10,7 +10,8 @@
         '$state',
         'mqttService',
         'brokerDetails',
-        'messageService'
+        'messageService',
+        '$timeout'
         ];
     
     function splashscreenCtrl(
@@ -18,9 +19,11 @@
         $state,
         mqttService,
         brokerDetails,
-        messageService
+        messageService,
+        $timeout
     ) {
         var vm = this;
+        var counter = 0;
 
         vm.update = function(){
             
@@ -30,6 +33,31 @@
             mqttService.initialize(brokerDetails.HOST, brokerDetails.PORT);
             mqttService.onConnectionLost(function () {
                 console.error("connection lost");
+                
+        
+        
+                $timeout(
+                    function retry(){
+                    
+                        //initialize(brokerDetails.HOST, brokerDetails.PORT);
+                        mqttService.connect(function (success, error) {
+                            if (success) {
+                            
+                            } else if (error) {
+                                console.log(error)
+                                alert(`Could Not Connect to ${brokerDetails.HOST}:${brokerDetails.PORT}`)
+                                counter = counter + 1;
+                                console.log(counter);
+                                if(counter > 10){
+                                    $state.go('splashscreen');
+                                }else{
+                                    retry();
+                                }
+                                
+                            }
+        
+                        },mqttOptions)
+                }, 100);
             });
 
             messageService.initialize();
