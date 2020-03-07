@@ -23,46 +23,19 @@
         $timeout
     ) {
         var vm = this;
-        var counter = 0;
-
+        
         vm.update = function(){
             
             console.log(brokerDetails);
 
 
             mqttService.initialize(brokerDetails.HOST, brokerDetails.PORT);
-            mqttService.onConnectionLost(function () {
-                console.error("connection lost");
-                
-        
-        
-                $timeout(
-                    function retry(){
-                    
-                        //initialize(brokerDetails.HOST, brokerDetails.PORT);
-                        mqttService.connect(function (success, error) {
-                            if (success) {
-                            
-                            } else if (error) {
-                                console.log(error)
-                                alert(`Could Not Connect to ${brokerDetails.HOST}:${brokerDetails.PORT}`)
-                                counter = counter + 1;
-                                console.log(counter);
-                                if(counter > 10){
-                                    $state.go('splashscreen');
-                                }else{
-                                    retry();
-                                }
-                                
-                            }
-        
-                        },mqttOptions)
-                }, 100);
-            });
 
             messageService.initialize();
+
+            mqttService.setMessageListener(messageService.onNewMessage);
             
-    
+            mqttService.setResubscribeListener(messageService.resubscribe);
 
             var mqttOptions = {};
 
@@ -73,8 +46,6 @@
                     mqttOptions.password = brokerDetails.PASSWORD;
                 }
             }
-
-                
 
             mqttService.connect(function (success, error) {
                 if (success) {

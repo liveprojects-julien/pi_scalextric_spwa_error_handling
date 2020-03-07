@@ -108,14 +108,14 @@
         When this state is navigated to the onhashchange function 
         is called which is ignored. 
         */
-        window.onhashchange = function () {
-            if (changed) {
-                console.log('changed');
-                stop();
-            } else {
-                changed = true;
-            }
-        }
+        // window.onhashchange = function () {
+        //     if (changed) {
+        //         console.log('changed');
+        //         stop();
+        //     } else {
+        //         changed = true;
+        //     }
+        // }
 
       
         messageService.subscribe(throttleTopic,stateName, function(message){

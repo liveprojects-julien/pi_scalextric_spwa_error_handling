@@ -10,26 +10,26 @@ messageService.$inject = [
 function messageService(mqttService, brokerDetails, $timeout) {
     
     var registry = {};
-    var vm = this;
-    vm.initialize = initialize;
-    vm.onMessageArrived = onMessageArrived;
-    vm.subscribe = subscribe;
-    vm.unsubscribe = unsubscribe;
-    vm.registry = registry;
-    vm.publish = publish;
-    vm.disconnect = disconnect;
+    var self = this;
+    self.initialize = initialize;
+    self.onNewMessage = onNewMessage;
+    self.subscribe = subscribe;
+    self.unsubscribe = unsubscribe;
+    self.registry = registry;
+    self.publish = publish;
+    self.disconnect = disconnect;
+    self.resubscribe = resubscribe;
     
     
 
     function initialize(){
         console.log("Message service ini");
-        mqttService.onMessageArrived(onMessageArrived);
     }
 
 
     
     //mqttService.onMessageArrived(messageService.onMessageArrived);
-    function onMessageArrived(message){
+    function onNewMessage(message){
         console.log(registry[message.topic]);
         var subscribers = registry[message.topic]; 
         if(subscribers != null){
@@ -55,10 +55,21 @@ function messageService(mqttService, brokerDetails, $timeout) {
         //console.log(message);
     }
 
+    function resubscribe(){
+        console.log("Resubscribing..");   
+        //console.log(registry[topicPath]); 
+        topicArray.forEach(element => {
+            console.log(element);
+            mqttService.subscribe(element);
+        });
+    }
+
+    var topicArray = [];
     function subscribe(topicPath, subscriberName, callback){
         registry[topicPath] = {};
         registry[topicPath][subscriberName] = callback;
         mqttService.subscribe(topicPath);
+        topicArray.push(topicPath);
     }
 
     function unsubscribe(subscriberName,topicPath){
