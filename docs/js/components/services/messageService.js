@@ -11,6 +11,7 @@ function messageService(mqttService, brokerDetails, $timeout) {
     
     var registry = {};
     var self = this;
+    var topicArray = [];
     self.initialize = initialize;
     self.onNewMessage = onNewMessage;
     self.subscribe = subscribe;
@@ -57,14 +58,12 @@ function messageService(mqttService, brokerDetails, $timeout) {
 
     function resubscribe(){
         console.log("Resubscribing..");   
-        //console.log(registry[topicPath]); 
         topicArray.forEach(element => {
             console.log(element);
             mqttService.subscribe(element);
         });
     }
 
-    var topicArray = [];
     function subscribe(topicPath, subscriberName, callback){
         registry[topicPath] = {};
         registry[topicPath][subscriberName] = callback;
@@ -76,6 +75,7 @@ function messageService(mqttService, brokerDetails, $timeout) {
         delete registry[topicPath][subscriberName];
         if(!!registry[topicPath] && registry[topicPath].length == 0){
             mqttService.unsubscribe(topicPath);
+            topicArray = topicArray.filter(e => e !== topicPath);
         }
     }
 
