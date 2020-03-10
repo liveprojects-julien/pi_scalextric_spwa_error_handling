@@ -24,7 +24,7 @@ function mqttService($timeout, brokerDetails, $state) {
     self.setResubscribeListener = setResubscribeListener;
 
     var RETRY_DELAY_MS = 2000;
-    var MAX_RETRIES = 15;
+    var MAX_RETRIES = 10;
 
     var client = null;
     var messageListener;
@@ -140,6 +140,7 @@ function mqttService($timeout, brokerDetails, $state) {
 
 
     function handleRetryError() {
+        alert('Timed out after trying to reconnect. Redirecting to splashscreen!');
         $state.go('splashscreen');
     }
 
